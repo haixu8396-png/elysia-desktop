@@ -24,7 +24,7 @@ Elysia 是一款开源的桌面 AI 伴侣应用，把「会说话、会动、能
 - 🎨 **主题调色**：多套配色预设 + 自定义主辅色。
 - 🔒 **数据私有**：API Key、聊天记录、角色卡、模型全部保存在本机，不经过任何第三方。
 
-> 灵感来自 [linsyking/Airi](https://github.com/linsyking/Airi)。
+> 灵感来自 [moeru-ai/Airi](https://github.com/moeru-ai/airi) 与 AI 主播 [Neuro-sama](https://www.youtube.com/channel/UCLHmLrj4pHHg3-iBJn_CqxA)。
 
 ## 📸 预览
 
@@ -42,7 +42,7 @@ Elysia 是一款开源的桌面 AI 伴侣应用，把「会说话、会动、能
 ### 🔧 从源码运行
 
 ```bash
-git clone https://github.com/<你的用户名>/elysia-desktop.git
+git clone https://github.com/haixu8396-png/elysia-desktop.git
 cd elysia-desktop
 npm install
 npm start
@@ -138,6 +138,7 @@ elysia/
 
 ## 🙏 致谢
 
-- [linsyking/Airi](https://github.com/linsyking/Airi) —— 灵感来源
+- [moeru-ai/Airi](https://github.com/moeru-ai/airi) —— 灵感来源（自托管 AI 伴侣项目）
+- [Neuro-sama](https://www.youtube.com/channel/UCLHmLrj4pHHg3-iBJn_CqxA) —— AI 虚拟主播，追寻「AI 的灵魂」的方向
 - [oh-my-live2d](https://github.com/oh-my-live2d/oh-my-live2d) —— Live2D 运行时
 - [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
