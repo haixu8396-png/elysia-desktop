@@ -1,0 +1,64 @@
+{
+  "name": "elysia",
+  "productName": "Elysia",
+  "version": "0.1.0",
+  "description": "开源桌面 AI 伴侣：多模型 LLM 对话 + Live2D 看板娘 + TTS/STT + 角色卡，本地运行、数据私有",
+  "license": "MIT",
+  "author": "Elysia Contributors",
+  "main": "main.js",
+  "scripts": {
+    "build": "vite build",
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron .",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.elysia.desktop",
+    "productName": "Elysia",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "compression": "normal",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "Elysia",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "dependencies": {
+    "oh-my-live2d": "^0.19.3"
+  },
+  "devDependencies": {
+    "electron": "^44.1.0",
+    "electron-builder": "^26.15.3",
+    "vite": "^8.2.2"
+  }
+}
