@@ -13,6 +13,10 @@ const DIST_INDEX = path.join(APP_ROOT, 'dist', 'index.html');
 
 // 用户数据目录：使用 Electron userData，应用升级/重装/移动都不会丢失设置、角色卡、模型
 app.setName('Elysia');
+const DEFAULT_USER_DATA = app.getPath('userData');
+// 数据放 D 盘（可用环境变量 ELYSIA_DATA_DIR 覆盖）
+const CUSTOM_USER_DATA = process.env.ELYSIA_DATA_DIR || 'D:/ElysiaData';
+try { app.setPath('userData', CUSTOM_USER_DATA); } catch { /* 忽略 */ }
 let USER_DATA_DIR = null;
 let MODELS_DIR = path.join(APP_ROOT, 'models');
 let CHARACTERS_DIR = path.join(APP_ROOT, 'characters');
@@ -114,6 +118,24 @@ function copyDirRec(src, dst) {
 // 首次启动时，把旧版（应用目录内）的数据迁移到 userData，之后以 userData 为准
 function migrateLegacyData() {
   try {
+    // 从旧版默认 userData（%APPDATA%\Elysia）迁移到当前目录（如 D:\ElysiaData）
+    const oldUserData = path.join(process.env.APPDATA || '', 'Elysia');
+    if (oldUserData !== USER_DATA_DIR && fs.existsSync(oldUserData)) {
+      const oldSettings = path.join(oldUserData, 'data', 'settings.json');
+      if (!fs.existsSync(SETTINGS_FILE) && fs.existsSync(oldSettings)) {
+        fs.copyFileSync(oldSettings, SETTINGS_FILE);
+      }
+      const oldChars = path.join(oldUserData, 'characters');
+      const hasChars = fs.existsSync(CHARACTERS_DIR) && fs.readdirSync(CHARACTERS_DIR).some((n) => n.endsWith('.json'));
+      if (!hasChars && fs.existsSync(oldChars)) {
+        copyDirRec(oldChars, CHARACTERS_DIR);
+      }
+      const oldModels = path.join(oldUserData, 'models');
+      const hasModels = fs.existsSync(MODELS_DIR) && fs.readdirSync(MODELS_DIR).length > 0;
+      if (!hasModels && fs.existsSync(oldModels)) {
+        copyDirRec(oldModels, MODELS_DIR);
+      }
+    }
     const legacySettings = path.join(APP_ROOT, 'data', 'settings.json');
     if (!fs.existsSync(SETTINGS_FILE) && fs.existsSync(legacySettings)) {
       fs.copyFileSync(legacySettings, SETTINGS_FILE);
@@ -639,7 +661,20 @@ app.whenReady().then(async () => {
   AVATARS_DIR = path.join(CHARACTERS_DIR, 'avatars');
   DATA_DIR = path.join(USER_DATA_DIR, 'data');
   SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
-  ensureDirs();
+  try {
+    ensureDirs();
+  } catch (err) {
+    // D 盘不可用时回退到默认用户目录
+    console.error('[data] 无法使用 ' + USER_DATA_DIR + '，回退到默认目录：', err);
+    app.setPath('userData', DEFAULT_USER_DATA);
+    USER_DATA_DIR = app.getPath('userData');
+    MODELS_DIR = path.join(USER_DATA_DIR, 'models');
+    CHARACTERS_DIR = path.join(USER_DATA_DIR, 'characters');
+    AVATARS_DIR = path.join(CHARACTERS_DIR, 'avatars');
+    DATA_DIR = path.join(USER_DATA_DIR, 'data');
+    SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+    ensureDirs();
+  }
   migrateLegacyData();
   await startModelServer();
   registerIpc();
